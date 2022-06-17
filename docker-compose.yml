@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  neo4j:
+    image: neo4j:latest
+    restart: unless-stopped
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      # - ./neo4j/conf:/conf:Z
+      # - ./neo4j/data/databases:/data/databases:Z
+      - ./neo4j/import:/import:Z
+      # - ./neo4j/logs:/logs:Z
+      #- ./neo4j/plugins:/plugins:Z
+    environment:
+      - NEO4J_AUTH=neo4j/neo4j1
+  myapp:
+    image: docker.io/bitnami/laravel:8
+    ports:
+      - '3000:8000'
+    environment:
+      - NEO4J_HOST=neo4j
+      - NEO4J_PORT=7474
+      - NEO4J_USERNAME=neo4j
+    volumes:
+      - './my-project:/app'
+    depends_on:
+      - neo4j
